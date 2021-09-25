@@ -1,0 +1,14 @@
+SQL COMMANDS:
+	CREATE TABLE user_details(user_id int NOT NULL AUTO_INCREMENT PRIMARY KEY, user_name varchar(20), email_id varchar(35), phone_no varchar(10), user_password varchar(15));
+
+	CREATE TABLE plan_details(plan_id int NOT NULL AUTO_INCREMENT PRIMARY KEY, plan_type varchar(10), transfer_size varchar(10), validityOf_files varchar(15), plan_cost int, ispassword_protection varchar(3), storage_capacity varchar(10), showads varchar(3));
+	
+	INSERT INTO plan_details VALUES(NULL, 'Free', '10_GB', '15_days', 0, 'No', '50_GB', 'Yes');
+	
+	INSERT INTO plan_details VALUES(NULL, 'PRO', '1_TB', 'Forever', 1000, 'Yes', '2_TB', 'No');
+
+	INSERT INTO plan_details VALUES(NULL, 'Business', '5_TB', 'Forever', 3000, 'Yes', '15_TB', 'No');
+
+	CREATE TABLE payment_details(payment_id int NOT NULL AUTO_INCREMENT PRIMARY KEY, user_id int, plan_id int, card_number varchar(20));
+
+	
