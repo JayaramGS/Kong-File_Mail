@@ -28,8 +28,24 @@ class userDetails:
         if choice == 1:
             userName = str(input("Enter your new username: "))
             passWord = str(input("To Confirm, please enter your password: "))
-            mycursor.execute('update user_details set user_name = replace(user_name,"userName") where user_password = "passWord"')
+            mycursor.execute('update user_details set user_name = %s where user_password = %s',(userName,passWord,))
             database.commit()
+            print("Updated successfully")
+        elif choice == 2:
+            EmailId = str(input("Enter your new EmailID: "))
+            passWord = str(input("To Confirm, please enter your password: "))
+            mycursor.execute('update user_details set email_id = %s where user_password = %s', (EmailId, passWord,))
+            database.commit()
+            print("Updated successfully")
+        elif choice == 3:
+            PhoneNo = str(input("Enter your new PhoneNumber: "))
+            passWord = str(input("To Confirm, please enter your password: "))
+            mycursor.execute('update user_details set phone_no = %s where user_password = %s', (PhoneNo, passWord,))
+            database.commit()
+            print("Updated successfully")
+        else:
+            print("Please enter correct option..!!")
+            exit()
 
 class adminDetails:
     def __init__(self, admin_name, admin_password):
@@ -42,11 +58,32 @@ class adminDetails:
         if details[0][1] == self.admin_name and details[0][2] == self.admin_password:
             return details[0][0]
 
+    def modifyPlans(self):
+        print("1. Add a new plan")
+        print("2. Remove a plan")
+        option = int(input("Enter your option: "))
+        if option == 1:
+            plan_type = str(input("Enter the plan_tye: "))
+            transfer_size = str(input("Enter maximum transfer size: "))
+            validityOf_files = str(input("Enter files availble for: "))
+            plan_cost = int(input("Enter plan_cost/month: "))
+            ispassword_protection = str(input("Is files are password_protection: "))
+            storage_capacity = str(input("Enter storage capacity: "))
+            show_ads = str(input("Want ads: "))
+            mycursor.execute('insert into plan_details(plan_id,plan_type,transfer_size,validityOf_files,plan_cost,ispassword_protection,storage_capacity,showads) values(NULL,%s,%s,%s,%s,%s,%s,%s)',(plan_type,transfer_size,validityOf_files,plan_cost,ispassword_protection,storage_capacity,show_ads,))
+            database.commit()
+            print("Plan added successfully..!!!")
+        if option == 2:
+            print("Which plan do you want to remove?")
+            plan_type = str(input("Enter plan type: "))
+            mycursor.execute('delete from plan_details where plan_type = %s', (plan_type,))
+            database.commit()
+            print("Plan removed successfully..!!")
+
 class displayAll:
     def list_planDetails(self):
         mycursor.execute("select * from plan_details")
         plan = mycursor.fetchall()
-        plan_id = [plan[0][0],plan[1][0],plan[2][0]]
         print('Plan_type             :',plan[0][1],'\t''\t',plan[1][1],'\t''\t',plan[2][1])
         print('Maximum_Transfer_Size :',plan[0][2],'\t''\t',plan[1][2],'\t''\t',plan[2][2])
         print('Files Available for   :',plan[0][3],'\t',plan[1][3],'\t',plan[2][3])
@@ -54,6 +91,7 @@ class displayAll:
         print('Password_Protection   :',plan[0][5],'\t''\t''\t',plan[1][5],'\t''\t',plan[2][5])
         print('Storage_Capacity      :',plan[0][6],'\t''\t',plan[1][6],'\t''\t',plan[2][6])
         print('Show_Ads              :',plan[0][7],'\t''\t',plan[1][7],'\t''\t',plan[2][7])
+
 
 class FileDetails:
     def __init__(self):
@@ -64,6 +102,7 @@ class FileDetails:
         file_txt = input()
         mycursor.execute("insert into file_details(file_id, file_name, file_txt) values(NULL,%s,%s)", (file_name, file_txt))
         database.commit()
+        print("File added successfully..!!!")
 
     def fileDeletion(self):
         file_name = str(input("Enter the file_name: "))
@@ -87,7 +126,7 @@ class FileDetails:
         mycursor.execute("select file_name,file_txt from file_details where file_name like %s", (file_name,))
         file = mycursor.fetchall()
         print('File_Name: ', file[0][0])
-        print('', file[0][1])
+        print('\t', file[0][1])
 
 class plans:
     def __init__(self):
@@ -105,6 +144,7 @@ class paymentDetails:
             card_number = str(input("Enter your Card_number: "))
             mycursor.execute("insert into payment_details(payment_id,user_id,plan_id,card_number) values(NULL,%s,%s,%s)",(user_id,planId,card_number,))
             database.commit()
+            print("Plan added..!!!")
 
 if __name__ == '__main__':
     print("Welcome to Kong-File Mail")
@@ -175,7 +215,6 @@ if __name__ == '__main__':
     if destination == 1:
         user_name = str(input("Enter your username: "))
         user_password = str(input("Enter your password: "))
-        user_name = user_name.capitalize()
         userValidation =  userDetails(user_name, user_password)
         user_id = userValidation.isAlreadyExistingUser()
         if user_id:
@@ -233,17 +272,20 @@ if __name__ == '__main__':
 
 
     if destination == 3:
-        admin_name = str(input("Enter your username: "))
+        admin_name = str(input("Enter your name: "))
         admin_password = str(input("Enter your password: "))
         adminValidation = adminDetails(admin_name, admin_password)
         admin_id = adminValidation.isAlreadyExistingAdmin()
         if admin_id:
-            print('1. Plans''\t2. Records')
+            print('1. View Plans''\t2. Modify Plans''\t3. Records')
             option = int(input("Enter your choice: "))
             if option == 1:
                 List_the_plans = displayAll()
                 List_the_plans.list_planDetails()
             if option == 2:
+                Modify_plans = adminDetails(admin_name, admin_password)
+                Modify_plans.modifyPlans()
+            if option == 3:
                 mycursor.execute("select * from records")
                 Records = mycursor.fetchall()
                 print("Total Plans sold: ", Records[0][0])
